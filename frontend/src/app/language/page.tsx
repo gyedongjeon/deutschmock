@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const languages = [
     { code: 'ar', name: 'Arabic', native: 'العربية' },

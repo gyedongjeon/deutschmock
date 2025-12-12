@@ -14,8 +14,10 @@ import { AuthService } from './auth.service';
     TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'super_secret_key_change_in_production',
+      useFactory: (configService: ConfigService) => ({
+        secret:
+          configService.get<string>('JWT_SECRET') ||
+          'super_secret_key_change_in_production',
         signOptions: { expiresIn: '7d' }, // Token valid for 7 days
       }),
       inject: [ConfigService],
@@ -25,4 +27,4 @@ import { AuthService } from './auth.service';
   providers: [GoogleStrategy, JwtStrategy, AuthService],
   exports: [AuthService], // Export to be usable in other modules
 })
-export class AuthModule { }
+export class AuthModule {}

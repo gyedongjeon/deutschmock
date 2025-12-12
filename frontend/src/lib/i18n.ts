@@ -5,6 +5,7 @@ import resourcesToBackend from 'i18next-resources-to-backend';
 i18n
     .use(initReactI18next)
     .use(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resourcesToBackend((language: string, namespace: string, callback: any) => {
             import(`../locales/${language}.json`)
                 .then((resources) => {

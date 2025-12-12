@@ -15,7 +15,7 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: () => {
         const dbConfig = {
           type: 'postgres' as const,
           host: 'localhost',
@@ -36,4 +36,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

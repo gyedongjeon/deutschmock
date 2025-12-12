@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { EvaluationService } from './evaluation.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -17,7 +18,9 @@ const mockConfigService = {
   get: jest.fn(() => 'mock_api_key'),
 };
 
-type MockRepository<T = any> = Partial<Record<keyof Repository<any>, jest.Mock>>;
+type MockRepository<T = any> = Partial<
+  Record<keyof Repository<any>, jest.Mock>
+>;
 
 describe('EvaluationService', () => {
   let service: EvaluationService;
@@ -27,7 +30,10 @@ describe('EvaluationService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EvaluationService,
-        { provide: getRepositoryToken(Evaluation), useFactory: mockEvaluationRepository },
+        {
+          provide: getRepositoryToken(Evaluation),
+          useFactory: mockEvaluationRepository,
+        },
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
@@ -58,7 +64,11 @@ describe('EvaluationService', () => {
 
   describe('getHistoryDetail', () => {
     it('should return a specific evaluation if found and authorized', async () => {
-      const mockEvaluation = { id: 1, score: 90, user: { id: 1 } } as Evaluation;
+      const mockEvaluation = {
+        id: 1,
+        score: 90,
+        user: { id: 1 },
+      } as Evaluation;
       repository.findOne?.mockResolvedValue(mockEvaluation);
 
       const result = await service.getHistoryDetail(1, 1);
@@ -72,7 +82,9 @@ describe('EvaluationService', () => {
     it('should throw NotFoundException if evaluation is not found', async () => {
       repository.findOne?.mockResolvedValue(null);
 
-      await expect(service.getHistoryDetail(999, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.getHistoryDetail(999, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -84,7 +96,11 @@ describe('EvaluationService', () => {
         level: 'A2',
         part: 1,
         module: 'writing',
-        task: { title: 'Task Title', scenario: 'Scenario', points: ['Test point'] },
+        task: {
+          title: 'Task Title',
+          scenario: 'Scenario',
+          points: ['Test point'],
+        },
       };
 
       const mockAiResponse = {
@@ -92,8 +108,8 @@ describe('EvaluationService', () => {
         feedback: {
           strengths: ['Good grammar'],
           improvements: ['Better vocab'],
-          corrected: 'My corrected German Text'
-        }
+          corrected: 'My corrected German Text',
+        },
       };
 
       const mockSavedEvaluation = {
@@ -109,14 +125,17 @@ describe('EvaluationService', () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({
-            candidates: [{
-              content: {
-                parts: [{ text: JSON.stringify(mockAiResponse) }]
-              }
-            }]
-          }),
-        })
+          json: () =>
+            Promise.resolve({
+              candidates: [
+                {
+                  content: {
+                    parts: [{ text: JSON.stringify(mockAiResponse) }],
+                  },
+                },
+              ],
+            }),
+        }),
       ) as jest.Mock;
 
       // Mock Repository
@@ -124,7 +143,10 @@ describe('EvaluationService', () => {
       repository.save?.mockResolvedValue(mockSavedEvaluation);
 
       // Execute
-      const result = await service.create(createEvaluationDto, { id: 1, language: 'en' } as any);
+      const result = await service.create(createEvaluationDto, {
+        id: 1,
+        language: 'en',
+      } as any);
 
       // Verify
       expect(global.fetch).toHaveBeenCalled();

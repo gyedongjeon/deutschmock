@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, UseGuards, Req, Query, Param } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return */
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Req,
+  Query,
+  Param,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EvaluationService } from './evaluation.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
@@ -10,7 +20,7 @@ export class EvaluationController {
   constructor(
     private readonly evaluationService: EvaluationService,
     private readonly authService: AuthService,
-  ) { }
+  ) {}
 
   @Post()
   @UseGuards(OptionalJwtAuthGuard)
@@ -19,7 +29,10 @@ export class EvaluationController {
     if (req.user) {
       user = await this.authService.findUser(req.user.userId);
     }
-    return this.evaluationService.create(createEvaluationDto, user || undefined);
+    return this.evaluationService.create(
+      createEvaluationDto,
+      user || undefined,
+    );
   }
 
   @Get('history')
@@ -31,7 +44,10 @@ export class EvaluationController {
   @Get('history/:id')
   @UseGuards(AuthGuard('jwt'))
   async getHistoryDetail(@Param('id') id: string, @Req() req) {
-    return this.evaluationService.getHistoryDetail(parseInt(id), req.user.userId);
+    return this.evaluationService.getHistoryDetail(
+      parseInt(id),
+      req.user.userId,
+    );
   }
 
   @Get('task')

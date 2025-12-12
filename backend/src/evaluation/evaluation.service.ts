@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -19,7 +20,7 @@ export class EvaluationService {
     @InjectRepository(Evaluation)
     private evaluationRepository: Repository<Evaluation>,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async create(createEvaluationDto: CreateEvaluationDto, user?: User) {
     const { answer, task } = createEvaluationDto;
@@ -29,7 +30,12 @@ export class EvaluationService {
     const part = task?.part || createEvaluationDto.part || 1;
 
     // Execute AI Evaluation
-    const evaluationResult = await this.evaluateWithGemini(answer, user?.language || 'en', task, level);
+    const evaluationResult = await this.evaluateWithGemini(
+      answer,
+      user?.language || 'en',
+      task,
+      level,
+    );
 
     // Save to DB
     const evaluation = this.evaluationRepository.create({
@@ -71,12 +77,12 @@ export class EvaluationService {
 
     if (!apiKey) {
       return {
-        title: "Mock Task",
-        scenario: "This is a mock task because the API key is missing.",
-        points: ["Point 1", "Point 2", "Point 3"],
-        instruction: "Write something.",
+        title: 'Mock Task',
+        scenario: 'This is a mock task because the API key is missing.',
+        points: ['Point 1', 'Point 2', 'Point 3'],
+        instruction: 'Write something.',
         level,
-        part
+        part,
       };
     }
 
@@ -88,61 +94,70 @@ export class EvaluationService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Referer': 'http://localhost:3000/'
+          Referer: 'http://localhost:3000/',
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{ text: prompt }]
-          }]
-        })
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+        }),
       });
 
       if (!response.ok) {
         throw new Error(`API Error ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       if (!data.candidates || data.candidates.length === 0) {
-        throw new Error("No candidates returned");
+        throw new Error('No candidates returned');
       }
 
       const textResponse = data.candidates[0].content.parts[0].text;
 
       const jsonStartIndex = textResponse.indexOf('{');
       const jsonEndIndex = textResponse.lastIndexOf('}');
-      if (jsonStartIndex === -1) throw new Error("No JSON found");
+      if (jsonStartIndex === -1) throw new Error('No JSON found');
 
-      const taskData = JSON.parse(textResponse.substring(jsonStartIndex, jsonEndIndex + 1));
+      const taskData = JSON.parse(
+        textResponse.substring(jsonStartIndex, jsonEndIndex + 1),
+      );
       // Include level and part info in Task result
       return { ...taskData, level, part };
-
     } catch (error) {
-      console.error("Task Generation Error:", error);
+      console.error('Task Generation Error:', error);
       // Fallback in case of error
       return {
-        title: "Error",
-        scenario: "Could not generate a new task. Please try again.",
-        points: ["Check API Key", "Retry"],
-        instruction: "Error mode.",
+        title: 'Error',
+        scenario: 'Could not generate a new task. Please try again.',
+        points: ['Check API Key', 'Retry'],
+        instruction: 'Error mode.',
         level,
-        part
+        part,
       };
     }
   }
 
-  private async evaluateWithGemini(text: string, lang: string, task?: any, level: string = 'A2'): Promise<{ score: number; feedback: any }> {
+  private async evaluateWithGemini(
+    text: string,
+    lang: string,
+
+    task?: any,
+    level: string = 'A2',
+  ): Promise<{ score: number; feedback: any }> {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
 
     if (!apiKey) {
-      console.warn("GEMINI_API_KEY is not set. Using mock evaluation.");
+      console.warn('GEMINI_API_KEY is not set. Using mock evaluation.');
       return {
         score: 70,
         feedback: {
-          strengths: ["Mock: Good effort (API Key missing)"],
-          improvements: ["Set GEMINI_API_KEY in .env"],
-          corrected: text
-        }
+          strengths: ['Mock: Good effort (API Key missing)'],
+          improvements: ['Set GEMINI_API_KEY in .env'],
+          corrected: text,
+        },
       };
     }
 
@@ -155,49 +170,57 @@ export class EvaluationService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Referer': 'http://localhost:3000/' // Must match the URL registered in Google Console
+          Referer: 'http://localhost:3000/', // Must match the URL registered in Google Console
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{ text: prompt }]
-          }]
-        })
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`API Error ${response.status}: ${JSON.stringify(errorData)}`);
+        throw new Error(
+          `API Error ${response.status}: ${JSON.stringify(errorData)}`,
+        );
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       // Response Parsing
+
       if (!data.candidates || data.candidates.length === 0) {
-        throw new Error("No candidates returned from Gemini");
+        throw new Error('No candidates returned from Gemini');
       }
 
       const textResponse = data.candidates[0].content.parts[0].text;
-      console.log("Gemini Raw Response:", textResponse);
+      console.log('Gemini Raw Response:', textResponse);
 
       const jsonStartIndex = textResponse.indexOf('{');
       const jsonEndIndex = textResponse.lastIndexOf('}');
 
       if (jsonStartIndex === -1 || jsonEndIndex === -1) {
-        throw new Error("No JSON found in response");
+        throw new Error('No JSON found in response');
       }
 
-      const jsonString = textResponse.substring(jsonStartIndex, jsonEndIndex + 1);
+      const jsonString = textResponse.substring(
+        jsonStartIndex,
+        jsonEndIndex + 1,
+      );
       return JSON.parse(jsonString);
-
-    } catch (error) {
-      console.error("Gemini API Error details:", error);
+    } catch (error: any) {
+      console.error('Gemini API Error details:', error);
       return {
         score: 0,
         feedback: {
           strengths: [],
+
           improvements: [`Error: ${error.message}`],
-          corrected: text
-        }
+          corrected: text,
+        },
       };
     }
   }

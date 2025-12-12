@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, CheckCircle2, Clock, MapPin, Award } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle2, Award } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import "../../../lib/i18n";
 
@@ -151,8 +151,10 @@ function HistoryDetailContent() {
                             </p>
 
                             {/* Check if task has points and rendering them */}
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             {Array.isArray((result.task as any).points) && (result.task as any).points.length > 0 && (
                                 <ul className="space-y-2">
+                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                     {(result.task as any).points.map((point: string, idx: number) => (
                                         <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
                                             <span className="mt-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0" />
@@ -208,7 +210,7 @@ function HistoryDetailContent() {
                         {result.feedback.corrected && (
                             <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
                                 <p className="font-semibold text-gray-900 mb-2">{t('corrected')}</p>
-                                <p className="text-sm text-gray-800 italic leading-relaxed">"{result.feedback.corrected}"</p>
+                                <p className="text-sm text-gray-800 italic leading-relaxed">&quot;{result.feedback.corrected}&quot;</p>
                             </div>
                         )}
                     </CardContent>

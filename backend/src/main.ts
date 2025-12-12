@@ -13,4 +13,4 @@ async function bootstrap() {
   });
   await app.listen(process.env.PORT ?? 3001); // Backend uses port 3001
 }
-bootstrap();
+bootstrap().catch((err) => console.error(err));

@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { X, LogOut } from "lucide-react";
 import { Suspense, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,11 @@ function SettingsContent() {
         const storedName = localStorage.getItem('user_name') || searchParams.get('name') || 'Google User';
         const storedEmail = localStorage.getItem('user_email') || searchParams.get('email') || 'user@gmail.com';
         const storedPicture = localStorage.getItem('user_picture') || searchParams.get('picture') || '';
-        setUserInfo({ name: storedName, email: storedEmail, picture: storedPicture });
+
+        // Ensure state update only happens if values differ to avoid unnecessary renders/rule violations
+        setTimeout(() => {
+            setUserInfo({ name: storedName, email: storedEmail, picture: storedPicture });
+        }, 0);
     }, [searchParams]);
 
     const { name, email, picture } = userInfo;

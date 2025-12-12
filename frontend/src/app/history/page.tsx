@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Clock, Calendar, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import "../../lib/i18n";
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/require-await */
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
@@ -5,16 +6,18 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(configService: ConfigService) {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: configService.get<string>('JWT_SECRET') || 'super_secret_key_change_in_production',
-        });
-    }
+  constructor(configService: ConfigService) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey:
+        configService.get<string>('JWT_SECRET') ||
+        'super_secret_key_change_in_production',
+    });
+  }
 
-    async validate(payload: any) {
-        // This value is added to request.user
-        return { userId: payload.sub, email: payload.email };
-    }
+  async validate(payload: any) {
+    // This value is added to request.user
+    return { userId: payload.sub, email: payload.email };
+  }
 }

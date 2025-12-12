@@ -37,7 +37,8 @@ function TestContent() {
     const [loading, setLoading] = useState(false);
     const [showResult, setShowResult] = useState(false);
     const [result, setResult] = useState<EvaluationResult | null>(null);
-    const [task, setTask] = useState<any>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [task, setTask] = useState<any>(null); // Keeping any for now, but explicit is better
     const [level, setLevel] = useState("A2");
     const [part, setPart] = useState(1); // Task Part State
     const [isTaskLoading, setIsTaskLoading] = useState(false);
@@ -389,7 +390,7 @@ function TestContent() {
                                         {result.feedback.corrected && (
                                             <div className="mt-2 p-3 bg-gray-50 rounded border border-gray-100">
                                                 <p className="font-semibold text-gray-900 mb-1 text-sm">{t('corrected')}</p>
-                                                <p className="text-sm text-gray-800 italic leading-relaxed">"{result.feedback.corrected}"</p>
+                                                <p className="text-sm text-gray-800 italic leading-relaxed">&quot;{result.feedback.corrected}&quot;</p>
                                             </div>
                                         )}
                                     </div>

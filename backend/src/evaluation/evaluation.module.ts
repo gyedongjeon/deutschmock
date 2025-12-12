@@ -6,11 +6,8 @@ import { Evaluation } from './entities/evaluation.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Evaluation]),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Evaluation]), AuthModule],
   controllers: [EvaluationController],
   providers: [EvaluationService],
 })
-export class EvaluationModule { }
+export class EvaluationModule {}

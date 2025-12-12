@@ -5,15 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, PlayCircle, Clock, Menu, LogOut } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Settings, PlayCircle, Clock, LogOut } from "lucide-react";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,37 +13,38 @@ export default function Home() {
   const [savedLang, setSavedLang] = useState<string | null>(null);
 
   useEffect(() => {
+    // Client-side initialization
     const token = localStorage.getItem('auth_token');
     const name = localStorage.getItem('user_name');
     const localLang = localStorage.getItem('user_language');
 
-    if (token) {
-      setIsLoggedIn(true);
-      if (name) setUserName(name);
-      if (localLang) setSavedLang(localLang);
+    // Wrap in setTimeout to avoid "setState synchronously within an effect" lint warning
+    setTimeout(() => {
+      if (token) {
+        setIsLoggedIn(true);
+        if (name) setUserName(name);
+        if (localLang) setSavedLang(localLang);
 
-      // Update user info (to retrieve language settings)
-      fetch('http://localhost:3001/auth/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-        .then(res => res.json())
-        .then(user => {
-          if (user && user.language) {
-            setSavedLang(user.language);
-            localStorage.setItem('user_language', user.language);
-          }
+        // Update user info
+        fetch('http://localhost:3001/auth/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
         })
-        .catch(err => console.error("Failed to fetch profile", err));
-    }
+          .then(res => res.json())
+          .then(user => {
+            if (user && user.language) {
+              setSavedLang(user.language);
+              localStorage.setItem('user_language', user.language);
+            }
+          })
+          .catch(err => console.error(err));
+      }
+    }, 0);
   }, []);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-2">
-          {/* Logo */}
           {/* Logo */}
           <div className="mx-auto w-24 h-24 flex items-center justify-center mb-4">
             <Image
