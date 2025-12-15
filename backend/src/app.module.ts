@@ -15,14 +15,14 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: () => {
+      useFactory: (configService: ConfigService) => {
         const dbConfig = {
           type: 'postgres' as const,
-          host: 'localhost',
-          port: 5432,
-          username: 'myuser',
-          password: 'mypassword',
-          database: 'deutschmock',
+          host: configService.get<string>('POSTGRES_HOST') ?? 'localhost',
+          port: configService.get<number>('POSTGRES_PORT') ?? 5432,
+          username: configService.get<string>('POSTGRES_USER') ?? 'myuser',
+          password: configService.get<string>('POSTGRES_PASSWORD') ?? 'mypassword',
+          database: configService.get<string>('POSTGRES_DB') ?? 'deutschmock',
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
         };
@@ -36,4 +36,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
