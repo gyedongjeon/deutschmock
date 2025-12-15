@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
@@ -40,7 +40,9 @@ export class AuthController {
     });
 
     // Redirect to Frontend (deliver token)
-    res.redirect(`http://localhost:3000/auth/callback?${params.toString()}`);
+    const frontendUrls = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
+    const primaryUrl = frontendUrls[0].trim();
+    res.redirect(`${primaryUrl}/auth/callback?${params.toString()}`);
   }
 
   @Patch('language')
