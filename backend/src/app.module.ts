@@ -24,6 +24,8 @@ import { AuthModule } from './auth/auth.module';
           password: configService.get<string>('POSTGRES_PASSWORD') ?? 'mypassword',
           database: configService.get<string>('POSTGRES_DB') ?? 'deutschmock',
           ssl: configService.get<string>('POSTGRES_HOST') !== 'localhost' ? { rejectUnauthorized: false } : false,
+          autoLoadEntities: true,
+          synchronize: true, // Auto-create tables (careful in prod, but ok for MVP)
         };
         console.log('🔗 DB Config Check:', { ...dbConfig, password: '****' });
         return dbConfig;
