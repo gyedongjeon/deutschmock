@@ -63,7 +63,7 @@ export default function LanguagePage() {
         const token = localStorage.getItem('auth_token');
         if (token) {
             try {
-                await fetch('http://localhost:3001/auth/language', {
+                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/language`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
