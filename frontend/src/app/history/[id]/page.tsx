@@ -54,7 +54,7 @@ function HistoryDetailContent() {
             }
 
             try {
-                const res = await fetch(`http://localhost:3001/evaluation/history/${params.id}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/evaluation/history/${params.id}`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
