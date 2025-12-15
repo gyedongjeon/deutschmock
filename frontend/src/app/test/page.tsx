@@ -70,7 +70,7 @@ function TestContent() {
             const headers: Record<string, string> = {};
             if (token) headers["Authorization"] = `Bearer ${token}`;
 
-            const res = await fetch(`http://localhost:3001/evaluation/task?level=${selectedLevel}&part=${selectedPart}`, { headers });
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/evaluation/task?level=${selectedLevel}&part=${selectedPart}`, { headers });
             if (res.ok) {
                 const data = await res.json();
                 setTask(data);
@@ -94,7 +94,7 @@ function TestContent() {
             if (!token) return;
 
             try {
-                const res = await fetch("http://localhost:3001/auth/profile", {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -124,7 +124,7 @@ function TestContent() {
         const token = localStorage.getItem('auth_token');
         if (token) {
             try {
-                await fetch("http://localhost:3001/auth/level", {
+                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/level`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
@@ -166,7 +166,7 @@ function TestContent() {
             // Ensure task object has the current level/part
             const taskWithContext = { ...task, level, part };
 
-            const response = await fetch("http://localhost:3001/evaluation", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/evaluation`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify({
@@ -355,7 +355,7 @@ function TestContent() {
                                                 <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 max-w-sm">
                                                     <h3 className="text-lg font-bold text-gray-900 mb-2">{t('loginRequiredTitle')}</h3>
                                                     <p className="text-sm text-gray-600 mb-4">{t('loginRequiredMessage')}</p>
-                                                    <a href="http://localhost:3001/auth/google" className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                                                    <a href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`} className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
                                                         {t('loginToView')}
                                                     </a>
                                                 </div>
