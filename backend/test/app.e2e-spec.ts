@@ -8,6 +8,13 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
+    // Mock env vars for Google Strategy
+    process.env.GOOGLE_CLIENT_ID = 'mock-client-id';
+    process.env.GOOGLE_CLIENT_SECRET = 'mock-client-secret';
+    process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/callback';
+    process.env.JWT_SECRET = 'mock-secret';
+    process.env.GEMINI_API_KEY = 'mock-gemini-key';
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
