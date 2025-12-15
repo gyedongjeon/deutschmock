@@ -23,8 +23,7 @@ import { AuthModule } from './auth/auth.module';
           username: configService.get<string>('POSTGRES_USER') ?? 'myuser',
           password: configService.get<string>('POSTGRES_PASSWORD') ?? 'mypassword',
           database: configService.get<string>('POSTGRES_DB') ?? 'deutschmock',
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: true,
+          ssl: configService.get<string>('POSTGRES_HOST') !== 'localhost' ? { rejectUnauthorized: false } : false,
         };
         console.log('🔗 DB Config Check:', { ...dbConfig, password: '****' });
         return dbConfig;
