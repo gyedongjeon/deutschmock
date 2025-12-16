@@ -37,7 +37,7 @@ export class User {
   @Column({ default: 0 })
   usage_count: number;
 
-  @Column({ default: 10 })
+  @Column({ default: 5 })
   usage_limit: number;
 
   @Column({ nullable: true })

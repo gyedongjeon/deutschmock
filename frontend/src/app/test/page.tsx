@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, CheckCircle2, RefreshCw, Menu, LogOut, Clock, ArrowLeft } from "lucide-react";
+import { Settings, CheckCircle2, RefreshCw, Menu, LogOut, Clock, ArrowLeft, Heart } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -230,8 +230,11 @@ function TestContent() {
 
                     <div className="flex items-center gap-2">
                         {usageInfo !== null && (
-                            <div className={`px-3 py-2 text-sm font-medium rounded-md border ${usageInfo.count >= usageInfo.limit ? 'bg-red-50 text-red-700 border-red-200' : 'bg-white text-gray-600 border-gray-300'}`}>
-                                Trials: {usageInfo.count}/{usageInfo.limit}
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full shadow-sm border border-gray-100">
+                                <Heart className={`w-5 h-5 ${usageInfo.count >= usageInfo.limit ? 'text-gray-300 fill-gray-200' : 'text-red-500 fill-red-500'} transition-colors`} />
+                                <span className={`font-bold text-lg ${usageInfo.count >= usageInfo.limit ? 'text-gray-400' : 'text-red-500'}`}>
+                                    {Math.max(0, usageInfo.limit - usageInfo.count)}
+                                </span>
                             </div>
                         )}
                         <select
