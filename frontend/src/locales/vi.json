@@ -36,5 +36,6 @@
     "module": "Module",
     "viewDetails": "View Details",
     "noHistory": "No exam history found.",
-    "startTest": "Start New Test"
+    "startTest": "Start New Test",
+    "minCharWarning": "Viết ít nhất 20 ký tự (còn lại {{count}})"
 }

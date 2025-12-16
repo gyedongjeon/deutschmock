@@ -36,5 +36,6 @@
     "module": "Module",
     "viewDetails": "View Details",
     "noHistory": "No exam history found.",
-    "startTest": "Start New Test"
+    "startTest": "Start New Test",
+    "minCharWarning": "Escribe al menos 20 caracteres (quedan {{count}})"
 }

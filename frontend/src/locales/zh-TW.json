@@ -36,5 +36,6 @@
     "module": "Module",
     "viewDetails": "View Details",
     "noHistory": "No exam history found.",
-    "startTest": "Start New Test"
+    "startTest": "Start New Test",
+    "minCharWarning": "請至少輸入20個字元 (還剩 {{count}} 個)"
 }

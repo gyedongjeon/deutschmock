@@ -36,5 +36,6 @@
     "module": "Modul",
     "viewDetails": "Details anzeigen",
     "noHistory": "Noch keine Prüfungen abgelegt.",
-    "startTest": "Neuen Test starten"
+    "startTest": "Neuen Test starten",
+    "minCharWarning": "Schreiben Sie mindestens 20 Zeichen ({{count}} übrig)"
 }

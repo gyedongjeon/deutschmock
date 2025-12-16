@@ -36,5 +36,6 @@
     "module": "الوحدة",
     "viewDetails": "عرض التفاصيل",
     "noHistory": "لا يوجد سجل للامتحانات بعد.",
-    "startTest": "ابدأ اختباراً جديداً"
+    "startTest": "ابدأ اختباراً جديداً",
+    "minCharWarning": "Write at least 20 chars ({{count}} left)"
 }
