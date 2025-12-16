@@ -42,6 +42,7 @@ function TestContent() {
     const [level, setLevel] = useState("A2");
     const [part, setPart] = useState(1); // Task Part State
     const [isTaskLoading, setIsTaskLoading] = useState(false);
+    const [usageInfo, setUsageInfo] = useState<{ count: number; limit: number } | null>(null);
     const resultRef = useRef<HTMLDivElement>(null);
 
     // Number of parts for each level
@@ -87,26 +88,30 @@ function TestContent() {
         }
     };
 
-    // Load User Profile (Level) on Mount
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            const token = localStorage.getItem('auth_token');
-            if (!token) return;
+    const fetchUserProfile = async () => {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
 
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const user = await res.json();
-                    if (user.level) {
-                        setLevel(user.level);
-                    }
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const user = await res.json();
+                if (user.level) {
+                    setLevel(user.level);
                 }
-            } catch (err) {
-                console.error("Error fetching profile:", err);
+                if (typeof user.usage_count === 'number' && typeof user.usage_limit === 'number') {
+                    setUsageInfo({ count: user.usage_count, limit: user.usage_limit });
+                }
             }
-        };
+        } catch (err) {
+            console.error("Error fetching profile:", err);
+        }
+    };
+
+    // Load User Profile (Level & Usage) on Mount
+    useEffect(() => {
         fetchUserProfile();
     }, []);
 
@@ -152,6 +157,11 @@ function TestContent() {
             return;
         }
 
+        if (usageInfo && usageInfo.count >= usageInfo.limit) {
+            alert("Trial limit reached! Please contact support to upgrade.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -176,6 +186,10 @@ function TestContent() {
             });
 
             if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                if (response.status === 403) {
+                    throw new Error(errData.message || "Trial limit reached");
+                }
                 throw new Error("Evaluation failed");
             }
 
@@ -183,14 +197,17 @@ function TestContent() {
             setResult(data);
             setShowResult(true);
 
+            // Refresh usage info after successful submission
+            fetchUserProfile();
+
             // Scroll to result
             setTimeout(() => {
                 resultRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert(t('alertError'));
+            alert(error.message || t('alertError'));
         } finally {
             setLoading(false);
         }
@@ -207,6 +224,11 @@ function TestContent() {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {usageInfo !== null && (
+                            <div className={`px-3 py-2 text-sm font-medium rounded-md border ${usageInfo.count >= usageInfo.limit ? 'bg-red-50 text-red-700 border-red-200' : 'bg-white text-gray-600 border-gray-300'}`}>
+                                Trials: {usageInfo.count}/{usageInfo.limit}
+                            </div>
+                        )}
                         <select
                             value={level}
                             onChange={handleLevelChange}

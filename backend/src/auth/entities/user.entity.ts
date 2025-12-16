@@ -34,6 +34,12 @@ export class User {
   @Column({ default: 'A2' })
   level: string;
 
+  @Column({ default: 0 })
+  usage_count: number;
+
+  @Column({ default: 10 })
+  usage_limit: number;
+
   @OneToMany(() => Evaluation, (evaluation) => evaluation.user)
   evaluations: Evaluation[];
 

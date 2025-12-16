@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
@@ -19,10 +19,26 @@ export class EvaluationService {
   constructor(
     @InjectRepository(Evaluation)
     private evaluationRepository: Repository<Evaluation>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private configService: ConfigService,
-  ) {}
+  ) {
+    // ...
+  }
 
   async create(createEvaluationDto: CreateEvaluationDto, user?: User) {
+    // 1. Check Usage Limit (if user exists)
+    if (user) {
+      const freshUser = await this.userRepository.findOne({ where: { id: user.id } });
+      if (freshUser) {
+        if (freshUser.usage_count >= freshUser.usage_limit) {
+          throw new ForbiddenException('Trial limit reached (10/10). Please upgrade or contact support.');
+        }
+        // Increment usage count immediately (or after success - let's do after success to be kind)
+        // But we MUST check it here.
+      }
+    }
+
     const { answer, task } = createEvaluationDto;
 
     // Use level/part from task or DTO if available, defaults provided
@@ -36,6 +52,11 @@ export class EvaluationService {
       task,
       level,
     );
+
+    // 2. Increment Usage Count (Only on successful AI call)
+    if (user) {
+      await this.userRepository.increment({ id: user.id }, 'usage_count', 1);
+    }
 
     // Save to DB
     const evaluation = this.evaluationRepository.create({
