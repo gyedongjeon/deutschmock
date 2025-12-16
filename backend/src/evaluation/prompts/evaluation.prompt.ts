@@ -97,6 +97,8 @@ export const generateEvaluationPrompt = (
         }
       }
 
-      Important: Provide the feedback (strengths and improvements) in ${languageName}.
+      Important: Provide the feedback (strengths and improvements) in ${languageName} ONLY. Do NOT provide the German translation in parentheses.
+      Example: "This SMS does not cover all points." (Good)
+      Example: "This SMS does not cover all points. (Diese SMS behandelt nicht alle Punkte.)" (BAD - Do not do this)
     `;
 };
