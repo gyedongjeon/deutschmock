@@ -219,7 +219,12 @@ function TestContent() {
                 {/* Header */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between py-4 gap-4">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
+                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                                BETA
+                            </span>
+                        </div>
                         <p className="text-sm text-gray-500">{t('subtitle')}</p>
                     </div>
 

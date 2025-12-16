@@ -40,6 +40,9 @@ export class User {
   @Column({ default: 10 })
   usage_limit: number;
 
+  @Column({ nullable: true })
+  last_usage_date: Date;
+
   @OneToMany(() => Evaluation, (evaluation) => evaluation.user)
   evaluations: Evaluation[];
 

@@ -31,11 +31,18 @@ export class EvaluationService {
     if (user) {
       const freshUser = await this.userRepository.findOne({ where: { id: user.id } });
       if (freshUser) {
-        if (freshUser.usage_count >= freshUser.usage_limit) {
-          throw new ForbiddenException('Trial limit reached (10/10). Please upgrade or contact support.');
+        const today = new Date().toDateString();
+        const lastDate = freshUser.last_usage_date ? freshUser.last_usage_date.toDateString() : null;
+
+        // Reset if new day
+        if (lastDate !== today) {
+          freshUser.usage_count = 0;
+          // We don't save immediately here to save a DB call, we trust the check below
         }
-        // Increment usage count immediately (or after success - let's do after success to be kind)
-        // But we MUST check it here.
+
+        if (freshUser.usage_count >= freshUser.usage_limit) {
+          throw new ForbiddenException('Daily trial limit reached (10/10). Please upgrade or try again tomorrow.');
+        }
       }
     }
 
@@ -53,9 +60,24 @@ export class EvaluationService {
       level,
     );
 
-    // 2. Increment Usage Count (Only on successful AI call)
+    // 2. Increment Usage Count & Update Date (Only on successful AI call)
     if (user) {
-      await this.userRepository.increment({ id: user.id }, 'usage_count', 1);
+      // We perform a safe update that handles the reset implicitly by setting the value
+      const freshUser = await this.userRepository.findOne({ where: { id: user.id } });
+      if (freshUser) {
+        const today = new Date();
+        const lastDateStr = freshUser.last_usage_date ? freshUser.last_usage_date.toDateString() : null;
+
+        if (lastDateStr !== today.toDateString()) {
+          // First use of the day
+          await this.userRepository.update({ id: user.id }, { usage_count: 1, last_usage_date: today });
+        } else {
+          // Same day, just increment
+          await this.userRepository.increment({ id: user.id }, 'usage_count', 1);
+          // Ensure date is current (though distinct days are handled above, keeping it fresh is fine)
+          await this.userRepository.update({ id: user.id }, { last_usage_date: today });
+        }
+      }
     }
 
     // Save to DB
