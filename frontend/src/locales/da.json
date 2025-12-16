@@ -37,5 +37,5 @@
     "viewDetails": "View Details",
     "noHistory": "No exam history found.",
     "startTest": "Start New Test",
-    "minCharWarning": "Write at least 20 chars ({{count}} left)"
+    "minCharWarning": "Skriv mindst 20 tegn ({{count}} tilbage)"
 }

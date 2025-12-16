@@ -37,5 +37,5 @@
     "viewDetails": "View Details",
     "noHistory": "No exam history found.",
     "startTest": "Start New Test",
-    "minCharWarning": "Write at least 20 chars ({{count}} left)"
+    "minCharWarning": "最低20文字書いてください (残り{{count}}文字)"
 }

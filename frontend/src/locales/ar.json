@@ -37,5 +37,5 @@
     "viewDetails": "عرض التفاصيل",
     "noHistory": "لا يوجد سجل للامتحانات بعد.",
     "startTest": "ابدأ اختباراً جديداً",
-    "minCharWarning": "Write at least 20 chars ({{count}} left)"
+    "minCharWarning": "اكتب 20 حرفًا على الأقل (متبقي {{count}})"
 }
