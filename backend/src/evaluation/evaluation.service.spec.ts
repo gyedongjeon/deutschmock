@@ -6,6 +6,7 @@ import { Evaluation } from './entities/evaluation.entity';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundException } from '@nestjs/common';
+import { User } from '../auth/entities/user.entity';
 
 const mockEvaluationRepository = () => ({
   create: jest.fn(),
@@ -22,9 +23,17 @@ type MockRepository<T = any> = Partial<
   Record<keyof Repository<any>, jest.Mock>
 >;
 
+// Mock User Repository
+const mockUserRepository = () => ({
+  findOne: jest.fn(),
+  update: jest.fn(),
+  increment: jest.fn(),
+});
+
 describe('EvaluationService', () => {
   let service: EvaluationService;
   let repository: MockRepository<Evaluation>;
+  let userRepository: MockRepository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,12 +43,17 @@ describe('EvaluationService', () => {
           provide: getRepositoryToken(Evaluation),
           useFactory: mockEvaluationRepository,
         },
+        {
+          provide: getRepositoryToken(User),
+          useFactory: mockUserRepository,
+        },
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
     service = module.get<EvaluationService>(EvaluationService);
     repository = module.get(getRepositoryToken(Evaluation));
+    userRepository = module.get(getRepositoryToken(User));
   });
 
   it('should be defined', () => {
