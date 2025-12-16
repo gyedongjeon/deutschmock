@@ -94,16 +94,18 @@ export const generateTaskPrompt = (
     
     The task should be realistic and suitable for ${level} proficiency.
     
+    CRITICAL: You MUST include a specific name for the recipient in the 'scenario' or 'instruction' (e.g. 'Ihre Lehrerin Frau Müller', 'Ihr Freund Thomas', 'das Hotel Stern'). Do NOT say just 'your teacher' or 'a friend'. Give them a NAME.
+    
     Return the task in the following JSON format ONLY:
     {
       "title": "Topic Title (German)",
-      "scenario": "A short description of the situation in German (Sie sind ...).",
-      "points": [
-        "First point to cover (German)",
-        "Second point to cover (German)",
-        "Third point to cover (German)"
-      ],
-      "instruction": "Schreiben Sie ca. ${partSpec.length}. Schreiben Sie zu allen Punkten.",
+    "scenario": "A description of the situation in German (Sie sind ...). IMPORTANT: You MUST specify a name for the recipient (e.g. 'Ihre Lehrerin Frau Müller', 'Ihr Freund Thomas', 'das Hotel Stern').",
+    "points": [
+      "First point to cover (German)",
+      "Second point to cover (German)",
+      "Third point to cover (German)"
+    ],
+    "instruction": "Schreiben Sie eine E-Mail/SMS an [Name]. Schreiben Sie ca. ${partSpec.length}. Schreiben Sie zu allen Punkten.",
       "time": "${partSpec.time}"
     }
   `;

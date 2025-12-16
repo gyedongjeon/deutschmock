@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, CheckCircle2, RefreshCw, Menu, LogOut, Clock, ArrowLeft } from "lucide-react";
+import { Settings, CheckCircle2, RefreshCw, Menu, LogOut, Clock, ArrowLeft, Heart } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -42,6 +42,7 @@ function TestContent() {
     const [level, setLevel] = useState("A2");
     const [part, setPart] = useState(1); // Task Part State
     const [isTaskLoading, setIsTaskLoading] = useState(false);
+    const [usageInfo, setUsageInfo] = useState<{ count: number; limit: number } | null>(null);
     const resultRef = useRef<HTMLDivElement>(null);
 
     // Number of parts for each level
@@ -87,26 +88,30 @@ function TestContent() {
         }
     };
 
-    // Load User Profile (Level) on Mount
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            const token = localStorage.getItem('auth_token');
-            if (!token) return;
+    const fetchUserProfile = async () => {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
 
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const user = await res.json();
-                    if (user.level) {
-                        setLevel(user.level);
-                    }
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const user = await res.json();
+                if (user.level) {
+                    setLevel(user.level);
                 }
-            } catch (err) {
-                console.error("Error fetching profile:", err);
+                if (typeof user.usage_count === 'number' && typeof user.usage_limit === 'number') {
+                    setUsageInfo({ count: user.usage_count, limit: user.usage_limit });
+                }
             }
-        };
+        } catch (err) {
+            console.error("Error fetching profile:", err);
+        }
+    };
+
+    // Load User Profile (Level & Usage) on Mount
+    useEffect(() => {
         fetchUserProfile();
     }, []);
 
@@ -152,6 +157,11 @@ function TestContent() {
             return;
         }
 
+        if (usageInfo && usageInfo.count >= usageInfo.limit) {
+            alert("Trial limit reached! Please contact support to upgrade.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -176,6 +186,10 @@ function TestContent() {
             });
 
             if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                if (response.status === 403) {
+                    throw new Error(errData.message || "Trial limit reached");
+                }
                 throw new Error("Evaluation failed");
             }
 
@@ -183,14 +197,18 @@ function TestContent() {
             setResult(data);
             setShowResult(true);
 
+            // Refresh usage info after successful submission
+            fetchUserProfile();
+
             // Scroll to result
             setTimeout(() => {
                 resultRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100);
 
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(error);
-            alert(t('alertError'));
+            const errorMessage = error instanceof Error ? error.message : t('alertError');
+            alert(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -202,11 +220,24 @@ function TestContent() {
                 {/* Header */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between py-4 gap-4">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
+                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                                BETA
+                            </span>
+                        </div>
                         <p className="text-sm text-gray-500">{t('subtitle')}</p>
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {usageInfo !== null && (
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full shadow-sm border border-gray-100">
+                                <Heart className={`w-5 h-5 ${usageInfo.count >= usageInfo.limit ? 'text-gray-300 fill-gray-200' : 'text-red-500 fill-red-500'} transition-colors`} />
+                                <span className={`font-bold text-lg ${usageInfo.count >= usageInfo.limit ? 'text-gray-400' : 'text-red-500'}`}>
+                                    {Math.max(0, usageInfo.limit - usageInfo.count)}
+                                </span>
+                            </div>
+                        )}
                         <select
                             value={level}
                             onChange={handleLevelChange}
@@ -324,11 +355,14 @@ function TestContent() {
                         />
 
                         <Button
-                            className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 transition-all"
+                            className={`w-full h-12 text-base font-semibold transition-all ${input.trim().length >= 20
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
                             onClick={handleSubmit}
-                            disabled={loading || isTaskLoading}
+                            disabled={loading || isTaskLoading || input.trim().length < 20}
                         >
-                            {loading ? t('submitting') : t('submit')}
+                            {loading ? t('submitting') : input.trim().length < 20 ? `Write at least 20 chars (${Math.max(0, 20 - input.trim().length)} left)` : t('submit')}
                         </Button>
                     </CardContent>
                 </Card>

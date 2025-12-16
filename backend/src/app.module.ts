@@ -21,9 +21,13 @@ import { AuthModule } from './auth/auth.module';
           host: configService.get<string>('POSTGRES_HOST') ?? 'localhost',
           port: configService.get<number>('POSTGRES_PORT') ?? 5432,
           username: configService.get<string>('POSTGRES_USER') ?? 'myuser',
-          password: configService.get<string>('POSTGRES_PASSWORD') ?? 'mypassword',
+          password:
+            configService.get<string>('POSTGRES_PASSWORD') ?? 'mypassword',
           database: configService.get<string>('POSTGRES_DB') ?? 'deutschmock',
-          ssl: configService.get<string>('POSTGRES_HOST') !== 'localhost' ? { rejectUnauthorized: false } : false,
+          ssl:
+            configService.get<string>('POSTGRES_HOST') !== 'localhost'
+              ? { rejectUnauthorized: false }
+              : false,
           autoLoadEntities: true,
           synchronize: true, // Auto-create tables (careful in prod, but ok for MVP)
         };
@@ -37,4 +41,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
