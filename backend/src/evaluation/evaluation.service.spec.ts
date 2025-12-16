@@ -106,7 +106,7 @@ describe('EvaluationService', () => {
     it('should create an evaluation by calling AI and saving to DB', async () => {
       // Mock Data
       const createEvaluationDto = {
-        answer: 'My German Text',
+        answer: 'My German Text is now long enough to pass validation',
         level: 'A2',
         part: 1,
         module: 'writing',

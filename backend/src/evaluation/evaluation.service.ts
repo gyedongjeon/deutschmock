@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
@@ -29,10 +33,14 @@ export class EvaluationService {
   async create(createEvaluationDto: CreateEvaluationDto, user?: User) {
     // 1. Check Usage Limit (if user exists)
     if (user) {
-      const freshUser = await this.userRepository.findOne({ where: { id: user.id } });
+      const freshUser = await this.userRepository.findOne({
+        where: { id: user.id },
+      });
       if (freshUser) {
         const today = new Date().toDateString();
-        const lastDate = freshUser.last_usage_date ? freshUser.last_usage_date.toDateString() : null;
+        const lastDate = freshUser.last_usage_date
+          ? freshUser.last_usage_date.toDateString()
+          : null;
 
         // Reset if new day
         if (lastDate !== today) {
@@ -41,7 +49,9 @@ export class EvaluationService {
         }
 
         if (freshUser.usage_count >= freshUser.usage_limit) {
-          throw new ForbiddenException('Daily trial limit reached (10/10). Please upgrade or try again tomorrow.');
+          throw new ForbiddenException(
+            'Daily trial limit reached (10/10). Please upgrade or try again tomorrow.',
+          );
         }
       }
     }
@@ -50,7 +60,9 @@ export class EvaluationService {
 
     // Validation: Minimum Length
     if (!answer || answer.trim().length < 20) {
-      throw new ForbiddenException('Answer is too short. Please write at least 20 characters to proceed.');
+      throw new ForbiddenException(
+        'Answer is too short. Please write at least 20 characters to proceed.',
+      );
     }
 
     // Use level/part from task or DTO if available, defaults provided
@@ -68,19 +80,33 @@ export class EvaluationService {
     // 2. Increment Usage Count & Update Date (Only on successful AI call)
     if (user) {
       // We perform a safe update that handles the reset implicitly by setting the value
-      const freshUser = await this.userRepository.findOne({ where: { id: user.id } });
+      const freshUser = await this.userRepository.findOne({
+        where: { id: user.id },
+      });
       if (freshUser) {
         const today = new Date();
-        const lastDateStr = freshUser.last_usage_date ? freshUser.last_usage_date.toDateString() : null;
+        const lastDateStr = freshUser.last_usage_date
+          ? freshUser.last_usage_date.toDateString()
+          : null;
 
         if (lastDateStr !== today.toDateString()) {
           // First use of the day
-          await this.userRepository.update({ id: user.id }, { usage_count: 1, last_usage_date: today });
+          await this.userRepository.update(
+            { id: user.id },
+            { usage_count: 1, last_usage_date: today },
+          );
         } else {
           // Same day, just increment
-          await this.userRepository.increment({ id: user.id }, 'usage_count', 1);
+          await this.userRepository.increment(
+            { id: user.id },
+            'usage_count',
+            1,
+          );
           // Ensure date is current (though distinct days are handled above, keeping it fresh is fine)
-          await this.userRepository.update({ id: user.id }, { last_usage_date: today });
+          await this.userRepository.update(
+            { id: user.id },
+            { last_usage_date: today },
+          );
         }
       }
     }

@@ -11,4 +11,4 @@ import { AuthModule } from '../auth/auth.module';
   controllers: [EvaluationController],
   providers: [EvaluationService],
 })
-export class EvaluationModule { }
+export class EvaluationModule {}
