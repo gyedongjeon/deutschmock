@@ -157,11 +157,6 @@ function TestContent() {
             return;
         }
 
-        if (input.trim().length < 20) {
-            alert("Please write at least 20 characters.");
-            return;
-        }
-
         if (usageInfo && usageInfo.count >= usageInfo.limit) {
             alert("Trial limit reached! Please contact support to upgrade.");
             return;
@@ -359,11 +354,14 @@ function TestContent() {
                         />
 
                         <Button
-                            className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 transition-all"
+                            className={`w-full h-12 text-base font-semibold transition-all ${input.trim().length >= 20
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
                             onClick={handleSubmit}
-                            disabled={loading || isTaskLoading}
+                            disabled={loading || isTaskLoading || input.trim().length < 20}
                         >
-                            {loading ? t('submitting') : t('submit')}
+                            {loading ? t('submitting') : input.trim().length < 20 ? `Write at least 20 chars (${Math.max(0, 20 - input.trim().length)} left)` : t('submit')}
                         </Button>
                     </CardContent>
                 </Card>
