@@ -362,7 +362,7 @@ function TestContent() {
                             onClick={handleSubmit}
                             disabled={loading || isTaskLoading || input.trim().length < 20}
                         >
-                            {loading ? t('submitting') : input.trim().length < 20 ? `Write at least 20 chars (${Math.max(0, 20 - input.trim().length)} left)` : t('submit')}
+                            {loading ? t('submitting') : input.trim().length < 20 ? t('minCharWarning', { count: Math.max(0, 20 - input.trim().length) }) : t('submit')}
                         </Button>
                     </CardContent>
                 </Card>

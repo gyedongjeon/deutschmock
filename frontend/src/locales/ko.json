@@ -36,5 +36,6 @@
     "module": "모듈",
     "viewDetails": "상세 보기",
     "noHistory": "아직 시험 기록이 없습니다.",
-    "startTest": "새 시험 시작"
+    "startTest": "새 시험 시작",
+    "minCharWarning": "최소 20자를 입력하세요 ({{count}}자 남음)"
 }
