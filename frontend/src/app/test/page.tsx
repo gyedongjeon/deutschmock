@@ -205,9 +205,10 @@ function TestContent() {
                 resultRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100);
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            alert(error.message || t('alertError'));
+            const errorMessage = error instanceof Error ? error.message : t('alertError');
+            alert(errorMessage);
         } finally {
             setLoading(false);
         }
