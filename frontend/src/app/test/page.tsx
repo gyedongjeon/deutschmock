@@ -157,6 +157,11 @@ function TestContent() {
             return;
         }
 
+        if (input.trim().length < 20) {
+            alert("Please write at least 20 characters.");
+            return;
+        }
+
         if (usageInfo && usageInfo.count >= usageInfo.limit) {
             alert("Trial limit reached! Please contact support to upgrade.");
             return;

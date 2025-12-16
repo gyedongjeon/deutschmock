@@ -48,6 +48,11 @@ export class EvaluationService {
 
     const { answer, task } = createEvaluationDto;
 
+    // Validation: Minimum Length
+    if (!answer || answer.trim().length < 20) {
+      throw new ForbiddenException('Answer is too short. Please write at least 20 characters to proceed.');
+    }
+
     // Use level/part from task or DTO if available, defaults provided
     const level = task?.level || createEvaluationDto.level || 'A2';
     const part = task?.part || createEvaluationDto.part || 1;
