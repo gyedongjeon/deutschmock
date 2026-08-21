@@ -160,8 +160,11 @@ export class EvaluationService {
       };
     }
 
+    const model =
+      this.configService.get<string>('GEMINI_TASK_MODEL') ||
+      'gemini-3.1-flash-lite';
     const prompt = generateTaskPrompt(level, part);
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(url, {
@@ -180,7 +183,10 @@ export class EvaluationService {
       });
 
       if (!response.ok) {
-        throw new Error(`API Error ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `API Error ${response.status}: ${JSON.stringify(errorData)}`,
+        );
       }
 
       const data: any = await response.json();
@@ -235,8 +241,10 @@ export class EvaluationService {
       };
     }
 
+    const model =
+      this.configService.get<string>('GEMINI_EVAL_MODEL') || 'gemini-3.6-flash';
     const prompt = generateEvaluationPrompt(text, lang, task, level);
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
       // Use fetch directly instead of SDK to control headers (Referer)
